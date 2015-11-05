@@ -24,3 +24,7 @@ dependency-reduced-pom.xml
 #
 _jboss/
 _tmp/
+#
+# ctags
+#
+tags
