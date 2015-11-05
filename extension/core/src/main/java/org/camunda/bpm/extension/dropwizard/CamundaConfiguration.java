@@ -63,7 +63,7 @@ public class CamundaConfiguration extends Configuration implements Serializable 
       .setJdbcUrl(camunda.database.getUrl())
       .setJdbcUsername(camunda.database.getUser())
       .setJdbcPassword(camunda.database.getPassword())
-      .setJobExecutorActivate(false) // we activate the executor via LifecycleListener (see CamundaBundle)
+      .setJobExecutorActivate(true)
       .setJdbcMaxActiveConnections(camunda.database.getMaxSize())
       .setHistory(camunda.historyLevel)
       .setDatabaseSchemaUpdate(camunda.databaseSchemaUpdate)
