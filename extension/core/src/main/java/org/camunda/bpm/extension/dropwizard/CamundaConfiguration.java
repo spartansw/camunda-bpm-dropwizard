@@ -11,7 +11,10 @@ import io.dropwizard.jackson.Jackson;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.validation.OneOf;
+
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
+import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.camunda.bpm.engine.impl.interceptor.DelegateInterceptor;
 import org.camunda.bpm.extension.dropwizard.db.GetHistoryLevelDao;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.skife.jdbi.v2.DBI;
@@ -21,7 +24,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static com.google.common.base.Throwables.propagate;
 import static org.camunda.bpm.engine.ProcessEngineConfiguration.HISTORY_ACTIVITY;
 import static org.camunda.bpm.engine.ProcessEngineConfiguration.HISTORY_AUDIT;
 import static org.camunda.bpm.engine.ProcessEngineConfiguration.HISTORY_FULL;
@@ -33,6 +35,7 @@ public class CamundaConfiguration extends Configuration implements Serializable 
 
   public static final String HISTORY_AUTO = "auto";
   private static final long serialVersionUID = 1L;
+  protected DelegateInterceptor delegateInterceptor;
 
   private final Logger logger = getLogger(this.getClass());
 
@@ -45,8 +48,17 @@ public class CamundaConfiguration extends Configuration implements Serializable 
     return camunda;
   }
 
+  public CamundaConfiguration setDelegateInterceptor(DelegateInterceptor delegateInterceptor) {
+    this.delegateInterceptor = delegateInterceptor;
+    return this;
+  }
+
+  public DelegateInterceptor getDelegateInterceptor() {
+    return delegateInterceptor;
+  }
+
   public ProcessEngineConfiguration buildProcessEngineConfiguration() {
-    return ProcessEngineConfiguration.createStandaloneProcessEngineConfiguration()
+    ProcessEngineConfigurationImpl engineConfig = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createStandaloneProcessEngineConfiguration()
       .setJdbcDriver(camunda.database.getDriverClass())
       .setJdbcUrl(camunda.database.getUrl())
       .setJdbcUsername(camunda.database.getUser())
@@ -56,6 +68,8 @@ public class CamundaConfiguration extends Configuration implements Serializable 
       .setHistory(camunda.historyLevel)
       .setDatabaseSchemaUpdate(camunda.databaseSchemaUpdate)
       .setJobExecutorDeploymentAware(camunda.jobExecutorDeploymentAware);
+    engineConfig.setDelegateInterceptor(delegateInterceptor);
+    return engineConfig;
   }
 
   public CamundaConfiguration overwriteHistoryLevel(final Environment environment) {

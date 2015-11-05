@@ -52,6 +52,12 @@
         <version>${camunda.version}</version>
         <classifier>classes</classifier>
       </dependency>
+      <dependency>
+        <groupId>com.hubspot.dropwizard</groupId>
+        <artifactId>dropwizard-guice</artifactId>
+        <!-- This module uses its own version rather than just 0.8.2 -->
+        <version>0.8.2.0</version>
+      </dependency>
 
       <dependency>
         <groupId>com.h2database</groupId>
